@@ -275,19 +275,28 @@
         </footer>
       </form>
     </dialog>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>  
 
-<script>
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
-};
 
-firebase.initializeApp(firebaseConfig);
-window.db = firebase.firestore();
-</script> 
-    <script src="app.js"></script>
-  </body>
-</html>
+<script> 
+                                                                                                                const firebaseConfig = {
+    apiKey: "AIzaSyCnA_VRpuHAX3j7NhsCE-7O1C1dqGcvAck",
+    authDomain: "attendance-app-cb197.firebaseapp.com",
+    projectId: "attendance-app-cb197",
+    storageBucket: "attendance-app-cb197.firebasestorage.app",
+    messagingSenderId: "460046012819",
+    appId: "1:460046012819:web:d9d94e09874910cd2b1866",
+    measurementId: "G-CE8Q67LC8E"
+  };  
+
+                                                                                                                    firebase.initializeApp(firebaseConfig);  
+
+window.db = firebase.firestore();                                                                                
+
+console.log("Firebase connected");
+</script>       
+                                                                                                           <!-- Your app -->
+<script src="app.js"></script>
+                      
