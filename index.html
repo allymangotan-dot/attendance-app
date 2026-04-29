@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111111" />
+    <title>Class Seat Attendance</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section id="loginScreen" class="login-screen">
+      <form id="loginForm" class="login-card">
+        <p class="eyebrow">Teacher Access</p>
+        <h1>Class Seat Attendance</h1>
+        <p class="login-note">Sign in to open the attendance records.</p>
+        <label class="field">
+          <span>Teacher username</span>
+          <input id="loginUsername" type="text" autocomplete="username" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input id="loginPassword" type="password" autocomplete="current-password" />
+        </label>
+        <p id="loginError" class="login-error" role="alert"></p>
+        <button class="primary-button login-button" type="submit">Log In</button>
+        <p class="login-hint">Default login: teacher / class123</p>
+      </form>
+    </section>
+
+    <main id="appShell" class="app-shell locked">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Seat Plan Attendance</p>
+          <h1 id="classTitle">Grade 6 - Section A</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="settingsButton" aria-label="Edit sections" title="Edit sections">
+            <span aria-hidden="true">Edit</span>
+          </button>
+          <button class="icon-button logout-button" id="logoutButton" aria-label="Log out" title="Log out">
+            <span aria-hidden="true">Lock</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="controls" aria-label="Attendance controls">
+        <label class="field">
+          <span>Grade and section</span>
+          <select id="sectionSelect"></select>
+        </label>
+        <label class="field">
+          <span>Date</span>
+          <input id="attendanceDate" type="date" />
+        </label>
+        <label class="field">
+          <span>Day type</span>
+          <select id="dayTypeSelect">
+            <option value="regular">Regular Class</option>
+            <option value="holiday">Holiday</option>
+            <option value="suspended">Classes Suspended</option>
+            <option value="asynchronous">Asynchronous</option>
+            <option value="online">Online Class</option>
+          </select>
+        </label>
+        <button id="markAllPresent" class="secondary-button">All Present</button>
+        <button id="clearAttendance" class="danger-button">Clear</button>
+      </section>
+
+      <section class="summary-grid" aria-label="Attendance totals">
+        <article class="stat-card present">
+          <span class="stat-label">Present</span>
+          <strong id="presentCount">0</strong>
+        </article>
+        <article class="stat-card late">
+          <span class="stat-label">Late</span>
+          <strong id="lateCount">0</strong>
+        </article>
+        <article class="stat-card absent">
+          <span class="stat-label">Absent</span>
+          <strong id="absentCount">0</strong>
+        </article>
+        <article class="stat-card excused">
+          <span class="stat-label">Excused</span>
+          <strong id="excusedCount">0</strong>
+        </article>
+        <article class="stat-card female">
+          <span class="stat-label">Female Attendees</span>
+          <strong id="femaleCount">0</strong>
+        </article>
+        <article class="stat-card male">
+          <span class="stat-label">Male Attendees</span>
+          <strong id="maleCount">0</strong>
+        </article>
+      </section>
+
+      <section class="seat-section" aria-label="Seat plan">
+        <div class="room-label">
+          <span>Board</span>
+        </div>
+        <div id="seatPlan" class="seat-plan"></div>
+      </section>
+
+      <section class="dashboard-section" aria-label="Teacher dashboard">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Teacher View</p>
+            <h2>Attendance Dashboard</h2>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <article class="chart-card">
+            <h3>Today</h3>
+            <canvas id="dailyChart" width="320" height="220" aria-label="Today attendance chart"></canvas>
+          </article>
+          <article class="chart-card">
+            <h3>This Month</h3>
+            <canvas id="monthlyChart" width="320" height="220" aria-label="Monthly attendance chart"></canvas>
+          </article>
+        </div>
+        <article class="insight-card">
+          <h3>Smart Insight</h3>
+          <ul id="smartInsights" class="name-list"></ul>
+        </article>
+        <article class="qr-card">
+          <div>
+            <h3>QR-Based Attendance</h3>
+            <p id="qrSessionText" class="qr-session-text">Create a QR attendance code for today.</p>
+          </div>
+          <div id="qrCodeBox" class="qr-code-box" aria-label="Attendance QR code"></div>
+          <div class="qr-actions">
+            <button id="createQrButton" class="secondary-button" type="button">Create QR</button>
+            <button id="printQrButton" class="primary-button" type="button">Print QR</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="lists">
+        <article>
+          <h2>Attendees</h2>
+          <ul id="presentList" class="name-list"></ul>
+        </article>
+        <article>
+          <h2>Absent or Excused</h2>
+          <ul id="absentList" class="name-list"></ul>
+        </article>
+      </section>
+
+      <section class="records-section" aria-label="Monthly attendance records">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Records</p>
+            <h2>Monthly Attendance</h2>
+          </div>
+          <label class="field compact">
+            <span>Month</span>
+            <input id="recordMonth" type="month" />
+          </label>
+        </div>
+        <div id="monthlyRecords" class="records-list"></div>
+      </section>
+
+      <section class="checker-section" aria-label="Weekly attendance checker">
+        <label class="field">
+          <span>Attendance checker this week</span>
+          <input id="checkerName" type="text" placeholder="Type the learner or teacher name" />
+        </label>
+      </section>
+
+      <section class="share-section" aria-label="Temporary guest sharing">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Secure Share</p>
+            <h2>5-Minute Guest Edit Links</h2>
+          </div>
+          <button id="createShareLinks" class="secondary-button" type="button">Create Links</button>
+        </div>
+        <p class="share-note">Two fresh links can be created for guests. They can edit without teacher login until the timer expires. Live syncing works between open copies of this app in the same browser session.</p>
+        <label class="field">
+          <span>Guest link 1</span>
+          <input id="shareLinkOne" type="text" readonly />
+        </label>
+        <label class="field">
+          <span>Guest link 2</span>
+          <input id="shareLinkTwo" type="text" readonly />
+        </label>
+        <p id="shareExpiry" class="share-expiry"></p>
+      </section>
+
+      <nav class="bottom-actions" aria-label="Bottom actions">
+        <button id="homeButton" class="secondary-button" type="button">Home</button>
+        <button id="bottomSaveButton" class="primary-button" type="button">Save</button>
+      </nav>
+
+      <p id="saveToast" class="save-toast" role="status"></p>
+    </main>
+
+    <dialog id="statusDialog" class="settings-dialog">
+      <form method="dialog" class="settings-panel">
+        <header>
+          <div>
+            <p class="eyebrow">Learner Status</p>
+            <h2 id="statusLearnerName">Learner</h2>
+          </div>
+          <button class="icon-button" value="cancel" aria-label="Close" title="Close">
+            <span aria-hidden="true">X</span>
+          </button>
+        </header>
+
+        <div class="status-buttons" aria-label="Choose attendance status">
+          <button id="setPresent" type="button" class="primary-button">Present</button>
+          <button id="setLate" type="button" class="secondary-button">Late</button>
+          <button id="setAbsent" type="button" class="danger-button">Absent</button>
+          <button id="setExcused" type="button" class="gold-button">Excused</button>
+        </div>
+
+        <label class="field">
+          <span>Time arrived, for late learners</span>
+          <input id="lateTimeInput" type="time" />
+        </label>
+
+        <label class="field">
+          <span>Reason, for absent or excused learners</span>
+          <textarea id="reasonInput" rows="4" placeholder="Type the reason here"></textarea>
+        </label>
+
+        <footer>
+          <button class="secondary-button return-button" type="button" data-close-dialog="statusDialog">Return</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="settings-dialog">
+      <form method="dialog" class="settings-panel">
+        <header>
+          <div>
+            <p class="eyebrow">Class Setup</p>
+            <h2>Grade Level Sections</h2>
+          </div>
+          <button class="icon-button" value="cancel" aria-label="Close" title="Close">
+            <span aria-hidden="true">X</span>
+          </button>
+        </header>
+
+        <label class="field wide">
+          <span>Selected grade and section name</span>
+          <input id="classNameInput" type="text" />
+        </label>
+
+        <section class="credential-box" aria-label="Teacher login settings">
+          <h3>Teacher Login</h3>
+          <div class="credential-grid">
+            <label class="field">
+              <span>Username</span>
+              <input id="teacherUsernameInput" type="text" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input id="teacherPasswordInput" type="password" autocomplete="new-password" />
+            </label>
+          </div>
+        </section>
+
+        <div class="editor-help">
+          Type one learner per line. Format: <strong>Name, F</strong> or <strong>Name, M</strong>.
+        </div>
+        <textarea id="learnerEditor" rows="12" spellcheck="false"></textarea>
+
+        <footer class="split-footer">
+          <button id="addSection" type="button" class="secondary-button">Add Section</button>
+          <button id="deleteSection" type="button" class="danger-button">Delete Section</button>
+          <button id="resetSample" type="button" class="secondary-button">Use Sample</button>
+          <button class="secondary-button return-button" type="button" data-close-dialog="settingsDialog">Return</button>
+          <button id="saveLearners" type="submit" class="primary-button">Save</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
